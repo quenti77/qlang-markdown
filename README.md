@@ -12,13 +12,18 @@ Add it to a project: `markdown = { git = "https://github.com/quenti77/qlang-mark
 
 ## What it reads
 
-Headings (`#` to `######`), paragraphs, `*emphasis*`, `**strong**`, `~~strike~~`, `` `code` ``, fenced code blocks,
-links, images, bullet / numbered / task lists (nested), quotes, tables (with alignment) and horizontal rules.
+It follows GitHub's Markdown (CommonMark plus the GFM extensions): headings (`#` and underlined, with GitHub-style
+ids), paragraphs, `*emphasis*`, `**strong**`, `***both***`, `~~strike~~`, `` `code` ``, fenced and indented code, inline
+and reference links, bare `https://` / `www.` addresses, `<autolinks>`, images, bullet / numbered / task lists
+(nested), quotes, alerts (`> [!NOTE]`), tables (alignment, `\|`), footnotes, entities, hard line breaks, rules.
+`<!-- comments -->` are dropped.
 
 ## Safe by default
 
-Raw HTML is **escaped**, never passed through, and a link to `javascript:` (or any scheme other than `http`,
-`https`, `mailto`) is written as plain text. A text written by a user can be shown as is.
+Raw HTML is **escaped**, and a link to `javascript:` (or any scheme other than `http`, `https`, `mailto`) is
+written as plain text: a text written by a user can be shown as is. With `Options.allow_html` the HTML of the text goes
+through (`<details>`, `<kbd>`, `<img>`…), minus `<script>`, `<iframe>`, `<style>`…, event attributes and
+`javascript:` addresses. Even so, only use it for text you trust: this is a filter, not a sanitizer.
 
 ## API
 
@@ -31,8 +36,9 @@ Raw HTML is **escaped**, never passed through, and a link to `javascript:` (or a
 | `escape(text)` | the text with `& < > "` escaped |
 
 `Options.highlight(language, code)` gives the HTML of a fenced code block: plug a syntax highlighter there.
-`Options.heading_ids` puts an `id` on each heading (repeated titles get `-2`, `-3`…).
+`Options.heading_ids` puts an `id` on each heading (repeated titles get `-1`, `-2`… as on GitHub).
 
 ## Not supported (yet)
 
-Raw HTML blocks, reference-style links (`[a][b]`), setext headings (`===`), indented code blocks, footnotes.
+Link reference definitions inside lists or quotes, HTML blocks that mix with Markdown, the full CommonMark emphasis
+rules for odd nestings, and the GitHub-only extras (emoji `:shortcodes:`, `@mentions`, `#123` references, math).
