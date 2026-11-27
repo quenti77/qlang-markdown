@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- The package is named `quenti77/markdown`, the `vendor/package` form the registry asks for. No change to the code.
+
 ## 0.1.0
 
 - First version, close to GitHub Markdown: headings (ATX and setext) with GitHub ids, paragraphs, emphasis, strike, code

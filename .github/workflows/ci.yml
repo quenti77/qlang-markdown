@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install qlang
         run: curl -fsSL https://raw.githubusercontent.com/quenti77/qlang/main/install.sh | sh -s -- --version ${{ matrix.qlang }}
+      - run: ~/.local/bin/qlang install
       - if: matrix.qlang == 'latest'
         run: ~/.local/bin/qlang fmt --check
       - if: matrix.qlang == 'latest'
