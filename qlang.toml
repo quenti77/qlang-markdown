@@ -1,6 +1,6 @@
 [package]
-name = "markdown"
-version = "0.1.0"
+name = "quenti77/markdown"
+version = "0.1.1"
 description = "Markdown to HTML, with a hook for code highlighting"
 license = "MIT"
 keywords = ["markdown", "html", "text"]
