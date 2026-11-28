@@ -38,6 +38,12 @@ through (`<details>`, `<kbd>`, `<img>`…), minus `<script>`, `<iframe>`, `<styl
 `Options.highlight(language, code)` gives the HTML of a fenced code block: plug a syntax highlighter there.
 `Options.heading_ids` puts an `id` on each heading (repeated titles get `-1`, `-2`… as on GitHub).
 
+## Alerts
+
+`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and `[!CAUTION]` start an alert. The rest of the first line is its title
+(`> [!TIP] A good title`, inline Markdown allowed); `+` or `-` right after the kind makes it foldable, open or closed
+(`> [!NOTE]- Details`), and the output is a `<details>` whose `<summary class="markdown-alert-title">` is the title.
+
 ## Not supported (yet)
 
 Link reference definitions inside lists or quotes, HTML blocks that mix with Markdown, the full CommonMark emphasis

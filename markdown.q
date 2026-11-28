@@ -913,14 +913,40 @@ fun block_indented_code(lines: array<string>, start: int) -> Step
     Step { html: "<pre><code>" + escape(code.join("\n")) + "</code></pre>\n", next: i }
 end
 
-fun alert_kind(line: string) -> string
-    let t = line.trim().lower()
+--" The first line of an alert: its kind, `+` or `-` when it can be folded (open or closed), and its own title. --"
+struct AlertHead
+    public kind: string
+    public fold: string
+    public title: string
+end
+
+--" Reads `[!KIND]`, then an optional `+` or `-`, then an optional title, from the first line of a quote. The kind is empty when the line does not start an alert. --"
+fun alert_head(line: string) -> AlertHead
+    let t = line.trim()
     for kind in ["note", "tip", "important", "warning", "caution"] do
-        if t == "[!" + kind + "]" then
-            return kind
+        let mark = "[!" + kind + "]"
+        if t.len() >= mark.len() and t.substring(0, mark.len()).lower() == mark then
+            let rest = t.substring(mark.len(), t.len())
+            let fold = if rest.starts_with("+") or rest.starts_with("-") then rest.substring(0, 1) else "" end
+            let title = if fold == "" then rest else rest.substring(1, rest.len()) end
+            if title == "" or title.starts_with(" ") or title.starts_with("\t") then
+                return AlertHead { kind: kind, fold: fold, title: title.trim() }
+            end
         end
     end
-    ""
+    AlertHead { kind: "", fold: "", title: "" }
+end
+
+--" An alert: a box with a title (the kind, or the one the text gave) and the quoted blocks; with `+` or `-` it is a `<details>`, open or closed. --"
+fun alert_html(head: AlertHead, quoted: array<string>, ctx: Context) -> string
+    let rest = render_blocks(quoted.slice(1, quoted.len()), ctx)
+    let title = if head.title == "" then head.kind.capitalize() else inline(head.title, ctx) end
+    let class_name = "markdown-alert markdown-alert-{head.kind}"
+    if head.fold == "" then
+        return "<div class=\"{class_name}\">\n<p class=\"markdown-alert-title\">{title}</p>\n" + rest + "</div>\n"
+    end
+    let open = if head.fold == "+" then " open" else "" end
+    "<details class=\"{class_name}\"{open}>\n<summary class=\"markdown-alert-title\">{title}</summary>\n" + rest + "</details>\n"
 end
 
 fun block_quote(lines: array<string>, start: int, ctx: Context) -> Step
@@ -931,11 +957,9 @@ fun block_quote(lines: array<string>, start: int, ctx: Context) -> Step
         quoted.push(if q.starts_with(" ") then q.substring(1, q.len()) else q end)
         i = i + 1
     end
-    let kind = alert_kind(quoted[0])
-    if kind != "" then
-        let rest = render_blocks(quoted.slice(1, quoted.len()), ctx)
-        let title = kind.capitalize()
-        return Step { html: "<div class=\"markdown-alert markdown-alert-{kind}\">\n<p class=\"markdown-alert-title\">{title}</p>\n" + rest + "</div>\n", next: i }
+    let head = alert_head(quoted[0])
+    if head.kind != "" then
+        return Step { html: alert_html(head, quoted, ctx), next: i }
     end
     Step { html: "<blockquote>\n" + render_blocks(quoted, ctx) + "</blockquote>\n", next: i }
 end
